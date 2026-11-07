@@ -1,0 +1,26 @@
+name: Build PinutSMP
+on:
+  push:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - name: Unzip and build
+        run: |
+          unzip -q PinutSMP-source.zip
+          cd PinutSMP
+          mvn -B package
+      - name: Publish jar as a release (easy download on phone)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: PinutSMP build ${{ github.run_number }}
+          files: PinutSMP/target/PinutSMP.jar
